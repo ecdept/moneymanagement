@@ -15,7 +15,7 @@ class IncomeCategory extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Card(
               child: ListTile(
-                leading: CircleAvatar(
+                leading: const CircleAvatar(
                   backgroundColor: Colors.purple,
                   radius: 40,
                   child: Text(

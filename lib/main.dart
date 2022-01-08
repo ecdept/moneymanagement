@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:moneymanagement/models/transactions/category/category_model.dart';
+import 'package:moneymanagement/models/transactions/transaction_model.dart';
 import 'package:moneymanagement/screens/home/screen_home.dart';
 
 Future<void> main() async {
@@ -14,6 +15,10 @@ Future<void> main() async {
   if (!Hive.isAdapterRegistered(CategoryModelAdapter().typeId)) {
     Hive.registerAdapter(CategoryModelAdapter());
   }
+
+  if (!Hive.isAdapterRegistered(TransactionModelAdapter().typeId)) {
+    Hive.registerAdapter(TransactionModelAdapter());
+  }
   runApp(const MyApp());
 }
 
@@ -24,7 +29,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Money Manager',
+      title: 'Money ',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

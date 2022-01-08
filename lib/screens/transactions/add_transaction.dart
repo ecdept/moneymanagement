@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:moneymanagement/db/category/category_db.dart';
+import 'package:moneymanagement/db/transactions/transaction_db.dart';
 import 'package:moneymanagement/models/transactions/category/category_model.dart';
+import 'package:moneymanagement/models/transactions/transaction_model.dart';
 
 class AddTransaction extends StatefulWidget {
   const AddTransaction({Key? key}) : super(key: key);
@@ -10,6 +12,9 @@ class AddTransaction extends StatefulWidget {
 }
 
 class _AddTransactionState extends State<AddTransaction> {
+  final purposecontroller=TextEditingController();
+  final amountcontroller=TextEditingController();
+
   DateTime? _selectedDate;
   CategoryType? _selectedCategoryType = CategoryType.income;
   CategoryModel? _selectedCategoryModel;
@@ -23,6 +28,7 @@ class _AddTransactionState extends State<AddTransaction> {
           child: Column(
             children: [
               TextFormField(
+                controller: purposecontroller,
                 decoration: const InputDecoration(
                   hintText: 'Purpose',
                   border: OutlineInputBorder(),
@@ -32,6 +38,7 @@ class _AddTransactionState extends State<AddTransaction> {
                 height: 10,
               ),
               TextFormField(
+                controller: amountcontroller,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     border: OutlineInputBorder(), hintText: 'Amount'),
@@ -69,6 +76,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     onChanged: (selectedvaluetemp) {
                       setState(() {
                         _selectedCategoryType = selectedvaluetemp;
+                        _selectedCategoryname = null;
                       });
                     },
                   ),
@@ -79,6 +87,7 @@ class _AddTransactionState extends State<AddTransaction> {
                     onChanged: (selectedvaluetemp) {
                       setState(() {
                         _selectedCategoryType = selectedvaluetemp;
+                        _selectedCategoryname = null;
                       });
                     },
                   ),
@@ -88,10 +97,17 @@ class _AddTransactionState extends State<AddTransaction> {
               DropdownButton(
                 hint: Text('Select Category'),
                 value: _selectedCategoryname,
-                items: incomelistnotifier.value.map((e) {
+
+                items: (_selectedCategoryType == CategoryType.income
+                        ? incomelistnotifier.value
+                        : expenselistnotifier.value)
+                    .map((e) {
                   return DropdownMenuItem(
                     value: e.name,
                     child: Text(e.name),
+                    onTap: (){
+                      _selectedCategoryModel=e;
+                    },
                   );
                 }).toList(),
                 onChanged: (changedvalue) {
@@ -101,11 +117,33 @@ class _AddTransactionState extends State<AddTransaction> {
                   print(changedvalue);
                 },
               ),
-              ElevatedButton(onPressed: () {}, child: Text('Submit')),
+              ElevatedButton(onPressed: () {
+                  addTransaction();
+              }, child: Text('Submit')),
             ],
           ),
         ),
       ),
     );
   }
+   Future<void> addTransaction()async{
+    final purposetext=purposecontroller.text;
+    final amounttext=amountcontroller.text;
+    if(purposetext.isEmpty|| amounttext.isEmpty)
+      {
+        return;
+      }
+    final parsedamount=double.tryParse(amounttext);
+    if(parsedamount==null){
+      return;
+    }
+    if(_selectedDate==null){
+      return;
+    }
+    final model=TransactionModel( purpose: purposetext, amount: parsedamount, date: _selectedDate!,
+        categorytype: _selectedCategoryType!, categorymodel: _selectedCategoryModel!);
+    await TransactionDB.instance.addToTransactiondb(model);
+   await TransactionDB.instance.refreshUI();
+    Navigator.of(context).pop();
+   }
 }
