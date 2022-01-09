@@ -14,14 +14,14 @@ class ExpenseCategory extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Card(
               child: ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: Colors.purple,
-                  radius: 40,
-                  child: Text(
-                    '12 \nDec',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                // leading: CircleAvatar(
+                //   backgroundColor: Colors.purple,
+                //   radius: 40,
+                //   child: Text(
+                //     '12 \nDec',
+                //     textAlign: TextAlign.center,
+                //   ),
+                // ),
                 title: Text(newexpenselist[index].name),
                 subtitle: Text(newexpenselist[index].type.toString()),
                 trailing: IconButton(

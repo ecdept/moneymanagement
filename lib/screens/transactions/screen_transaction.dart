@@ -1,6 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:moneymanagement/db/category/category_db.dart';
 import 'package:moneymanagement/db/transactions/transaction_db.dart';
+import 'package:moneymanagement/models/transactions/category/category_model.dart';
 import 'package:moneymanagement/models/transactions/transaction_model.dart';
 
 class ScreenTransactions extends StatelessWidget {
@@ -21,13 +25,16 @@ class ScreenTransactions extends StatelessWidget {
               leading: CircleAvatar(
                 radius: 40,
                 child: Text(
-                  '12 \nDec',
-                  textAlign: TextAlign.center,
+                  parseDate(newtransaction.date),
+                  textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold),
                 ),
+                backgroundColor: newtransaction.categorytype==CategoryType.income?Colors.green:Colors.red,
               ),
               title: Text('RS:${newtransaction.amount}'),
-              subtitle: Text(newtransaction.categorytype.name),
-              trailing: IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+              subtitle: Text(newtransaction.categorymodel.name),
+              trailing: IconButton(onPressed: () {
+                TransactionDB.instance.deleteTransaction(newtransaction);
+              }, icon: Icon(Icons.delete)),
             ),
           );
         },
@@ -41,5 +48,10 @@ class ScreenTransactions extends StatelessWidget {
     },
 
     );
+  }
+  String parseDate(DateTime date){
+    final formatedDate=DateFormat.MMMd().format(date);
+    final splittedDate=formatedDate.split(' ');
+    return ("${splittedDate.last}\n${splittedDate.first}");
   }
 }

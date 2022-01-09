@@ -10,6 +10,8 @@ abstract class TransactionFunctions{
   Future<void> addToTransactiondb(TransactionModel model);
  Future<List<TransactionModel>> getTransactions();
  Future<void> refreshUI();
+  Future<void> deleteTransaction(TransactionModel model);
+
 }
 
 
@@ -37,8 +39,16 @@ class TransactionDB implements TransactionFunctions{
   Future<void> refreshUI()async {
    final _list=await getTransactions();
    listnotifier.value.clear();
+   _list.sort((first,second)=>second.date.compareTo(first.date));
    listnotifier.value.addAll(_list);
    listnotifier.notifyListeners();
+  }
+
+  @override
+  Future<void> deleteTransaction(TransactionModel modeltodelete) async {
+    final db=await Hive.openBox<TransactionModel>('TransactionDB');
+    db.delete(modeltodelete.id);
+    refreshUI();
   }
 
 }
